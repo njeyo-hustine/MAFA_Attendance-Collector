@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MAFA Attendance System</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            min-height: 100vh;
+            font-family: "Segoe UI", Arial, sans-serif;
+            background: #061b3b;
+            color: #ffffff;
+            overflow-x: hidden;
+        }
+
+        .page {
+            min-height: 100vh;
+            position: relative;
+            background:
+                radial-gradient(circle at 10% 90%, rgba(0, 119, 255, .18), transparent 24%),
+                radial-gradient(circle at 90% 10%, rgba(0, 153, 255, .12), transparent 25%),
+                linear-gradient(135deg, #041633 0%, #062651 50%, #041a3d 100%);
+        }
+
+        .page::after {
+            content: "";
+            position: fixed;
+            width: 360px;
+            height: 360px;
+            border-radius: 50%;
+            right: -150px;
+            bottom: -180px;
+            background: rgba(0, 108, 255, .10);
+            pointer-events: none;
+        }
+
+        .container {
+            width: min(100% - 34px, 430px);
+            margin: 0 auto;
+            padding: 28px 0 25px;
+        }
+
+        /* MAFA logo */
+        .brand {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .logo-icon {
+            width: 72px;
+            height: 66px;
+            margin: 0 auto 4px;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #10a7ff;
+            filter: drop-shadow(0 0 12px rgba(0, 159, 255, .45));
+        }
+
+        .logo-icon svg {
+            width: 72px;
+            height: 66px;
+        }
+
+        .brand h1 {
+            font-size: 33px;
+            line-height: 1;
+            letter-spacing: .5px;
+            font-weight: 800;
+        }
+
+        .brand p {
+            color: #d0def1;
+            font-size: 12px;
+            letter-spacing: .9px;
+            font-weight: 600;
+            margin-top: 4px;
+        }
+
+        .department {
+            text-align: center;
+            margin: 17px 0 20px;
+        }
+
+        .department h2 {
+            font-size: 19px;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .department p {
+            color: #d6e3f4;
+            font-size: 12px;
+            line-height: 1.5;
+        }
+
+        /* Main attendance card */
+        .card {
+            background: #ffffff;
+            color: #12284c;
+            border-radius: 9px;
+            padding: 22px 22px 24px;
+            box-shadow: 0 15px 38px rgba(0, 0, 0, .25);
+        }
+
+        .field {
+            margin-bottom: 18px;
+        }
+
+        label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #243b61;
+            font-size: 13px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .field-icon {
+            color: #0b75e8;
+            font-size: 15px;
+            width: 16px;
+            text-align: center;
+        }
+
+        input,
+        select {
+            width: 100%;
+            height: 43px;
+            border: 1px solid #d6e0ee;
+            border-radius: 7px;
+            background: #fbfdff;
+            color: #19365f;
+            padding: 0 13px;
+            outline: none;
+            font-size: 13px;
+            font-family: inherit;
+        }
+
+        input::placeholder {
+            color: #a5b3c8;
+        }
+
+        input:focus,
+        select:focus {
+            border-color: #1684ed;
+            box-shadow: 0 0 0 3px rgba(22, 132, 237, .10);
+        }
+
+        select {
+            appearance: auto;
+            cursor: pointer;
+        }
+
+        select option {
+            color: #17355d;
+            background: white;
+        }
+
+        .submit {
+            width: 100%;
+            height: 43px;
+            border: 0;
+            border-radius: 7px;
+            background: #0879ef;
+            color: white;
+            font-family: inherit;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 5px 13px rgba(8, 121, 239, .20);
+            transition: background .2s, transform .15s;
+        }
+
+        .submit:hover {
+            background: #066bd4;
+        }
+
+        .submit:active {
+            transform: translateY(1px);
+        }
+
+        /* Flash messages */
+        .flash {
+            border-radius: 7px;
+            padding: 10px 12px;
+            margin-bottom: 15px;
+            font-size: 12px;
+            line-height: 1.4;
+        }
+
+        .flash.success {
+            color: #087a52;
+            background: #e8fff5;
+            border: 1px solid #b7efd7;
+        }
+
+        .flash.error,
+        .flash.danger {
+            color: #a52727;
+            background: #fff0f0;
+            border: 1px solid #f2c1c1;
+        }
+
+        .bottom-text {
+            text-align: center;
+            margin-top: 23px;
+            color: #9eb5d3;
+            font-size: 11px;
+            font-style: italic;
+            line-height: 1.6;
+        }
+
+        .bottom-text strong {
+            display: block;
+            color: #159eff;
+            font-style: normal;
+            font-size: 12px;
+            margin-top: 2px;
+        }
+
+        .admin-link {
+            display: block;
+            text-align: center;
+            margin-top: 20px;
+            color: #9fc3ec;
+            text-decoration: none;
+            font-size: 11px;
+        }
+
+        .admin-link:hover {
+            color: #ffffff;
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                width: min(100% - 24px, 430px);
+                padding-top: 20px;
+            }
+
+            .brand h1 {
+                font-size: 30px;
+            }
+
+            .department h2 {
+                font-size: 18px;
+            }
+
+            .card {
+                padding: 20px 17px 21px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+<div class="page">
+
+    <main class="container">
+
+        <!-- MAFA branding -->
+        <header class="brand">
+            <div class="logo-icon" aria-hidden="true">
+                <svg viewBox="0 0 100 90" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M49 14C39 4 24 5 13 12v48c12-6 24-6 36 2V18c0-2 0-3 0-4Z"
+                          fill="none" stroke="#08a7ff" stroke-width="5" stroke-linejoin="round"/>
+                    <path d="M51 14C61 4 76 5 87 12v48c-12-6-24-6-36 2V18c0-2 0-3 0-4Z"
+                          fill="none" stroke="#0879ef" stroke-width="5" stroke-linejoin="round"/>
+                    <path d="M49 12L42 2M51 12L58 2"
+                          stroke="#22b7ff" stroke-width="5" stroke-linecap="round"/>
+                </svg>
+            </div>
+            <h1>MAFA</h1>
+            <p>ATTENDANCE SYSTEM</p>
+        </header>
+
+        <section class="department">
+            <h2>Student Attendance</h2>
+            <p>Please enter your details below to record your attendance.</p>
+        </section>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="flash {{ category }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <section class="card">
+
+            <form method="POST" action="{{ url_for('public.home') }}">
+
+                <div class="field">
+                    <label for="student_name">
+                        <span class="field-icon">♟</span>
+                        Full Name
+                    </label>
+                    <input
+                        id="student_name"
+                        name="student_name"
+                        type="text"
+                        placeholder="Enter your full name"
+                        autocomplete="name"
+                        required
+                    >
+                </div>
+
+                <div class="field">
+                    <label for="school">
+                        <span class="field-icon">⌂</span>
+                        School
+                    </label>
+                    <input
+                        id="school"
+                        name="school"
+                        type="text"
+                        list="schools"
+                        placeholder="Select your school"
+                        required
+                    >
+                    <datalist id="schools">
+                        <option value="GBHS Buea">
+                        <option value="PSS Mankon">
+                        <option value="GBHS Deido">
+                        <option value="GBHS Génie Militaire">
+                        <option value="GBHS Bayelle">
+                        <option value="GHS Kumba">
+                        <option value="CCAS Kumba">
+                        <option value="GBHS Mutengene">
+                    </datalist>
+                </div>
+
+                <div class="field">
+                    <label for="subject_id">
+                        <span class="field-icon">▣</span>
+                        Subject
+                    </label>
+
+                    <select id="subject_id" name="subject_id" required>
+                        <option value="" selected disabled>Select your subject</option>
+
+                        {% if subjects %}
+                            {% for subject in subjects %}
+                                <option value="{{ subject['id'] }}">
+                                    {{ subject['name'] }}
+                                </option>
+                            {% endfor %}
+                        {% else %}
+                            <option value="1">Mathematics</option>
+                            <option value="2">Further Mathematics</option>
+                            <option value="3">Chemistry</option>
+                            <option value="4">Physics</option>
+                            <option value="5">Computer Science</option>
+                            <option value="6">ICT</option>
+                        {% endif %}
+                    </select>
+                </div>
+
+                <button class="submit" type="submit">
+                    ➤ &nbsp; Submit Attendance
+                </button>
+
+            </form>
+        </section>
+
+        <div class="bottom-text">
+            Together for a better future
+            <strong>MAFA</strong>
+        </div>
+
+        <a class="admin-link" href="{{ url_for('auth.login') }}">
+            Admin Login
+        </a>
+
+    </main>
+
+</div>
+</body>
+</html>
